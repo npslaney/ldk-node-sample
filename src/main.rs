@@ -182,19 +182,28 @@ fn list_channels(node: &Node) {
 		return;
 	}
 	println!("Channels:");
-	println!(
-		"UserChannelID \t| NodeID \t| ready? \t| capacity (sats) \t| spendable (sats) \t| Funding TXO"
-	);
+	println!("Channel Details:");
 	for ch in channels {
-		println!(
-			"- id {} \tnode {} \tready {} \tcap {} \tbal {} \ttxo {:?}",
-			ch.user_channel_id.0,
-			ch.counterparty_node_id,
-			ch.is_channel_ready,
-			ch.channel_value_sats,
-			millisats_to_sats(ch.outbound_capacity_msat),
-			ch.funding_txo
-		);
+		println!("- User Channel ID: {}", ch.user_channel_id.0);
+		println!("  Counterparty Node ID: {}", ch.counterparty_node_id);
+		println!("  Channel Status:");
+		println!("    Ready: {}", ch.is_channel_ready);
+		println!("    Usable: {}", ch.is_usable);
+		println!("    Announced: {}", ch.is_announced);
+		println!("  Balances:");
+		println!("    Total Capacity: {} sats", ch.channel_value_sats);
+		println!("    Outbound Capacity: {} sats", millisats_to_sats(ch.outbound_capacity_msat));
+		println!("    Inbound Capacity: {} sats", millisats_to_sats(ch.inbound_capacity_msat));
+		println!("  Config:");
+		println!("    Channel Config: {:?}", ch.config);
+		println!("    Force Close Spend Delay: {} blocks", ch.force_close_spend_delay.unwrap_or(0));
+		if let Some(txo) = ch.funding_txo {
+			println!("  Funding Transaction:");
+			println!("    Txid: {}", txo.txid);
+			println!("    Output Index: {}", txo.vout);
+		}
+		println!("  Confirmations Required: {}", ch.confirmations_required.unwrap_or(0));
+		println!();
 	}
 }
 
